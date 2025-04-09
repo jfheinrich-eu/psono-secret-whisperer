@@ -21,5 +21,5 @@ jobs:
 
       - name: Check outputs
         run: |
-          test "${{ steps.selftest.outputs.secrets.CI_REGISTRY }}" == "ghcr.io"
-          test "${{ steps.selftest.outputs.secrets.CI_REGISTRY_USER }}" == "jfheinrich"
+          test "${{ steps.selftest.outputs.secrets }}" == "ghcr.io"
+          test "${{ steps.selftest.outputs.secrets }}" == "jfheinrich"

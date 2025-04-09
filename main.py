@@ -7,10 +7,9 @@ import subprocess
 
 
 def set_github_action_output(output_name, output_value):
-    # f = open(os.path.abspath(os.environ["GITHUB_OUTPUT"]), "a")
-    # f.write(f'{output_name}={output_value}\n')
-    # f.close()
-    print(f"::set-output name={output_name}::{output_value}\n")
+    f = open(os.path.abspath(os.environ["GITHUB_OUTPUT"]), "a")
+    f.write(f'{output_name}={output_value}\n')
+    f.close()
 
 
 def main():
@@ -42,6 +41,7 @@ def main():
 
     cmd.append(os.environ["INPUT_SECRET_ID"])
 
+    secrets = ""
     for field in os.environ["INPUT_SECRET_FIELDS"].split(","):
         cmdval = cmd.copy()
         cmdval.append(field)
@@ -61,7 +61,10 @@ def main():
         if field in mask_secrets:
             print(f'::add-mask::{secret.stdout}\n')
 
-        set_github_action_output(field, secret.stdout)
+        secrets += f'{field}={secret.stdout},'
+
+    secrets = secrets[:-1]
+    set_github_action_output("secrets", secrets)
 
 
 if __name__ == "__main__":

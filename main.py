@@ -7,9 +7,10 @@ import subprocess
 
 
 def set_github_action_output(output_name, output_value):
-    f = open(os.path.abspath(os.environ["GITHUB_OUTPUT"]), "a")
-    f.write(f'{output_name}={output_value}\n')
-    f.close()
+    # f = open(os.path.abspath(os.environ["GITHUB_OUTPUT"]), "a")
+    # f.write(f'{output_name}={output_value}\n')
+    # f.close()
+    print(f"::set-output name={output_name}::{output_value}\n")
 
 
 def main():

@@ -14,7 +14,7 @@ def set_github_action_output(output_name, output_value):
 
 def main():
     secret_type = os.environ["INPUT_SECRET_TYPE"]
-    mask_secrets = os.environ["INPUT_MASK_SECRETS"].split(" ")
+    mask_secrets = os.environ["INPUT_MASK_SECRETS"].split(",")
     cmd = []
     psono_env = {}
     psono_env["PSONO_CI_API_KEY_ID"] = os.environ["INPUT_CI_API_KEY_ID"]
@@ -42,7 +42,7 @@ def main():
     cmd.append(os.environ["INPUT_SECRET_ID"])
 
     secrets = ""
-    for field in os.environ["INPUT_SECRET_FIELDS"].split(","):
+    for field in os.environ["INPUT_SECRET_FIELDS"].split(" "):
         cmdval = cmd.copy()
         cmdval.append(field)
         try:

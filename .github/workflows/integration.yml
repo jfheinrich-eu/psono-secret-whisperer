@@ -16,11 +16,11 @@ jobs:
           ci_server_url: ${{ vars.PSONO_SERVER_URL }}
           secret_id: ${{ secrets.PSONO_GITHUB_REGISTRY_ID }}
           secret_type: 'env'
-          secret_fields: CI_REGISTRY,CI_REGISTRY_USER
+          secret_fields: "CI_REGISTRY CI_REGISTRY_USER"
           mask_secrets: CI_REGISTRY_USER
 
       - name: Check outputs
         run: |
-          IFS=',' read secrets <<<"${{ steps.selftest.outputs.secrets }}"
+          secrets=(${{ steps.selftest.outputs.secrets }})
           test "${secrets[0]}" == "CI_REGISTRY=ghcr.io"
           test "${secrets[1]}" == "CI_REGISTRY_USER=jfheinrich"

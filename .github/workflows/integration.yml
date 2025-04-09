@@ -1,5 +1,10 @@
 name: Integration Test
+permissions:
+  contents: read
+  pull-requests: write
+
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest

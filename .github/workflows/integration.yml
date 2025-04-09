@@ -1,0 +1,16 @@
+name: Integration Test
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Self test
+        id: selftest
+
+        # Put your action repo here
+        uses: jfheinrich-eu/psono-secret-whisperer@
+
+      - name: Check outputs
+        run: |
+          test "${{ steps.selftest.outputs.myOutput }}" == "Hello world"

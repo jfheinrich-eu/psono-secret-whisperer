@@ -20,9 +20,14 @@ def main():
     psono_env["PSONO_CI_API_KEY_ID"] = os.environ["INPUT_CI_API_KEY_ID"]
     psono_env["PSONO_CI_API_SECRET_KEY_HEX"] = \
         os.environ["INPUT_CI_API_SECRET_KEY_HEX"]
-    psono_env["PSONO__CI_SERVER_URL"] = os.environ["INPUT_CI_SERVER_URL"]
+    psono_env["PSONO_CI_SERVER_URL"] = os.environ["INPUT_CI_SERVER_URL"]
 
-    cmd.append("/app/psonoci")
+    if os.environ.get('CI') is not None:
+        cmd.append("/app/psonoci")
+    elif os.environ.get('PSONOCI_PATH') is not None:
+        cmd.append(os.environ['PSONOCI_PATH'])
+    else:
+        cmd.append("psonoci")
 
     if secret_type == "secret":
         cmd.append("secret")
@@ -39,15 +44,23 @@ def main():
     for field in os.environ["INPUT_SECRET_FIELDS"].split(","):
         cmdval = cmd.copy()
         cmdval.append(field)
-        secret = subprocess.run(cmdval,
-                                capture_output=True,
-                                text=True,
-                                env=psono_env)
+        try:
+            secret = subprocess.run(cmdval,
+                                    capture_output=True,
+                                    text=True,
+                                    check=True,
+                                    env=psono_env)
+        except subprocess.CalledProcessError as e:
+            print(f"Error: {e}")
+            exit(2)
+        except FileNotFoundError:
+            print(f"Error: Command '{cmdval[0]}' not found")
+            exit(3)
 
         if field in mask_secrets:
-            print(f'::add-mask::{secret}')
+            print(f'::add-mask::{secret.stdout}')
 
-        set_github_action_output(field, secret)
+        set_github_action_output(field, secret.stdout)
 
 
 if __name__ == "__main__":

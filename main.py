@@ -8,7 +8,7 @@ import subprocess
 
 def set_github_action_output(output_name, output_value):
     f = open(os.path.abspath(os.environ["GITHUB_OUTPUT"]), "a")
-    f.write(f'{output_name}={output_value}')
+    f.write(f'{output_name}={output_value}\n')
     f.close()
 
 
@@ -58,7 +58,7 @@ def main():
             exit(3)
 
         if field in mask_secrets:
-            print(f'::add-mask::{secret.stdout}')
+            print(f'::add-mask::{secret.stdout}\n')
 
         set_github_action_output(field, secret.stdout)
 

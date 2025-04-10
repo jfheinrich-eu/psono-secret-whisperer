@@ -23,14 +23,32 @@ inputs:
     description: "Type of secret tp fetch: env or secret, default: secret"
     default: "secret"
   secret_fields:
-    description: "Space-separated list of secret keys to retrieve, default: username password"
+    description: "Comma-separated list of secret keys to retrieve, default: username password"
     default: "username password"
   mask_secrets:
     description: "Comma-separated list of secret keys to be masked"
 
 outputs:
-  secrets:
-    description: "Spaces separate list with keys/value pairs"
+  secret1:
+    description: "Secret of the first field in inputs.secret_fields"
+  secret2:
+    description: "Secret of the second field in inputs.secret_fields"
+  secret3:
+    description: "Secret of the third field in inputs.secret_fields"
+  secret4:
+    description: "Secret of the fourth field in inputs.secret_fields"
+  secret5:
+    description: "Secret of the fifth field in inputs.secret_fields"
+  secret6:
+    description: "Secret of the sixth field in inputs.secret_fields"
+  secret7:
+    description: "Secret of the seventh field in inputs.secret_fields"
+  secret8:
+    description: "Secret of the eighth field in inputs.secret_fields"
+  secret9:
+    description: "Secret of the ninth field in inputs.secret_fields"
+  secret10:
+    description: "Secret of the tenth field in inputs.secret_fields"
 
 runs:
   using: "docker"

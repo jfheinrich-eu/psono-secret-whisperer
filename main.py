@@ -41,8 +41,13 @@ def main():
 
     cmd.append(os.environ["INPUT_SECRET_ID"])
 
-    secrets = ""
-    for field in os.environ["INPUT_SECRET_FIELDS"].split(" "):
+    count = 0
+    for field in os.environ["INPUT_SECRET_FIELDS"].split(","):
+        count += 1
+        if count > 10:
+            print("To much fields, only ten fields allowed")
+            exit(100)
+
         cmdval = cmd.copy()
         cmdval.append(field)
         try:
@@ -61,10 +66,7 @@ def main():
         if field in mask_secrets:
             print(f'::add-mask::{secret.stdout}\n')
 
-        secrets += f'{field}="{secret.stdout}" '
-
-    secrets = secrets[:-1]
-    set_github_action_output("secrets", secrets)
+        set_github_action_output(f'secret{count}', secret.stdout)
 
 
 if __name__ == "__main__":

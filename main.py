@@ -60,7 +60,7 @@ def main():
             print(f"Error: {e}")
             exit(2)
         except FileNotFoundError:
-            print(f"Error: Command '{cmdval[0]}' not found")
+            print("Error: Command psonoci not found")
             exit(3)
 
         if field in mask_secrets:

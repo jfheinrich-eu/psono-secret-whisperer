@@ -1,7 +1,46 @@
-# psono-secret-whisperer
-A GitHub Action for securely retrieving secrets from PSONO server
+<p align="center">
+  <a href="" rel="noopener">
+ <img width=200px height=200px src="https://jfheinrich.eu/storage/assets/psono-secret-whisperer.png" alt="Project logo"></a>
+</p>
 
-## Usage
+<h3 align="center">PSONO Secret Whisperer</h3>
+
+<div align="center">
+
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+![Maintainer](https://img.shields.io/badge/maintainer-@jfheinrich-blue)
+[![GitHub Issues](https://img.shields.io/github/issues/jfheinrich-eu/psono-secret-whisperer.svg)](https://github.com/kylelobo/The-Documentation-Compendium/issues)
+[![GitHub pull-requests](https://img.shields.io/github/issues-pr/jfheinrich-eu/psono-secret-whisperer.svg)](https://GitHub.com/Naereen/StrapDown.js/pull/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+
+</div>
+
+---
+
+<p align="center"> A GitHub Action for securely retrieving secrets from PSONO server.
+    <br>
+</p>
+
+
+
+
+## 📝 Table of Contents
+
+- [📝 Table of Contents](#-table-of-contents)
+- [🧐 About ](#-about)
+- [🎈 Usage ](#-usage)
+- [➡️ Inputs ](#️-inputs)
+- [⬅️ Outputs ](#️-outputs)
+- [🛡️ Security Recommendations ](#️-security-recommendations)
+- [‼️ Requirements ](#️-requirements)
+- [📄 License ](#-license)
+- [✍️ Authors ](#️-authors)
+
+## 🧐 About <a name = "about"></a>
+
+A GitHub Action for securely retrieving secrets from PSONO server.
+
+## 🎈 Usage <a name="usage"></a>
 
 ```yaml
 jobs:
@@ -27,7 +66,7 @@ jobs:
           echo "Database URL: ${{ steps.selftest.outputs.secret2 }}"
 ```
 
-## Inputs
+## ➡️ Inputs <a name="inputs"></a>
 
 | Input                   | Description                                           | Required | Default           |
 |-------------------------|-------------------------------------------------------|----------|-------------------|
@@ -38,24 +77,28 @@ jobs:
 | `secret_fields`         | Comma-separated list of secret keys to retrieve       | No       | username,password |
 | `mask_secrets`          | Comma-separated list of secret keys to masked         | No       | -                 |
 
-## Outputs
+## ⬅️ Outputs <a name="outputs"></a>
 
 The action provides following outputs:
 
 Output field from `secret1` till `secret10`. `secret1` is the value for the first field in `inputs.secret_fields` and so on.
 
-## Security Recommendations
+## 🛡️ Security Recommendations <a name="security-recommendations"></a>
 
 - Always use GitHub secrets to store your PSONO credentials
 - Limit the secret keys you retrieve to only what you need
 - Consider using GitHub's OIDC support for even more secure authentication
 
-## Requirements
+## ‼️ Requirements <a name="requirements"></a>
 
 The action requires:
 - A PSONO server that's accessible from GitHub Actions
 - Valid PSONO credentials with access to the requested secrets
 
-## License
+## 📄 License <a name="license"></a>
 
 This GitHub Action is released under the [MIT License](LICENSE).
+
+## ✍️ Authors <a name = "authors"></a>
+
+- [@jfheinrich](https://github.com/jfheinrich) - Idea & Initial work

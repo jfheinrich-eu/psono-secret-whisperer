@@ -10,6 +10,15 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
+      - id: setup-secrets
+        name: Setup secrets
+        run: |
+          sudo apt update >/dev/null && sudo apt install -y curl >/dev/null
+          curl https://get.psono.com/psono/psono-ci/x86_64-linux/psonoci --output psonoci >/dev/null && chmod +x psonoci
+          ci_psono_registry_github_token="$(./psonoci secret get ${PSONO_GITHUB_TOKEN_ID} password)"
+          echo "::add-mask::$ci_psono_registry_github_token"
+          echo "ci_registry_github_token=$ci_psono_registry_github_token" >> "$GITHUB_OUTPUT"
+
       - name: Set up Python 3.9
         uses: actions/setup-python@v5.5.0
         with:
@@ -26,3 +35,4 @@ jobs:
         with:
           REPOSITORY: jfheinrich-eu/psono-secret-whisperer
           PROJECT_NAME: psono-secret-whisperer
+          TOKEN:  ${{ steps.setup-secrets.outputs.ci_registry_github_token }}

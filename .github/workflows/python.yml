@@ -3,7 +3,7 @@ permissions:
   contents: read
   pull-requests: write
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   lint:
@@ -22,4 +22,7 @@ jobs:
           flake8 main.py
 
       - name: Automatic requirements.txt for Python Project
-        uses: jfheinrich-eu/pipreqs-action@v4.0.0
+        uses: jfheinrich-eu/pipreqs-action@v4.0.2
+        with:
+          REPOSITORY: jfheinrich-eu/psono-secret-whisperer
+          PROJECT_NAME: psono-secret-whisperer

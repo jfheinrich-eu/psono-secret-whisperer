@@ -1,7 +1,6 @@
 name: Lint
 permissions:
-  contents: read
-  pull-requests: write
+  contents: write
 
 on: [push]
 
@@ -20,9 +19,9 @@ jobs:
         run: |
           sudo apt update >/dev/null && sudo apt install -y curl >/dev/null
           curl https://get.psono.com/psono/psono-ci/x86_64-linux/psonoci --output psonoci >/dev/null && chmod +x psonoci
-          ci_psono_github_com_token="$(./psonoci env-vars get-or-create ${PSONO_GITHUB_TOKEN_ID} GITHUB_GIT_TOKEN)"
-          echo "::add-mask::$ci_psono_github_com_token"
-          echo "github_com_token=$ci_psono_github_com_token" >> "$GITHUB_OUTPUT"
+          ci_psono_gpg_sign_key_id="$(./psonoci env-vars get-or-create ${PSONO_GITHUB_TOKEN_ID} GPG_SIGN_KEY_ID)"
+          echo "::add-mask::$ci_psono_gpg_sign_key_id"
+          echo "gpg_sign_key_id=$ci_psono_gpg_signkey_id" >> "$GITHUB_OUTPUT"
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v5.5.0
@@ -30,6 +29,7 @@ jobs:
           python-version: "3.9"
 
       - uses: actions/checkout@v4
+
       - name: Lint
         run: |
           pip install flake8
@@ -56,4 +56,5 @@ jobs:
           branch: ${{ github.ref_name }}
           commit_message: 'Updated requirements file on ${{ github.ref_name }} [skip-ci]'
           file_pattern: requirements.txt
+          commit_options: '--no-verify --gpg-sign=${{ steps.setup-secrets.outputs.gpg_sign_key_id }}'
 

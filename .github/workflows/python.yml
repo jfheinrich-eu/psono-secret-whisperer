@@ -21,7 +21,7 @@ jobs:
           curl https://get.psono.com/psono/psono-ci/x86_64-linux/psonoci --output psonoci >/dev/null && chmod +x psonoci
           ci_psono_gpg_sign_key_id="$(./psonoci env-vars get-or-create ${PSONO_GITHUB_TOKEN_ID} GPG_SIGN_KEY_ID)"
           echo "::add-mask::$ci_psono_gpg_sign_key_id"
-          echo "gpg_sign_key_id=$ci_psono_gpg_signkey_id" >> "$GITHUB_OUTPUT"
+          echo "gpg_sign_key_id=$ci_psono_gpg_sign_key_id" >> "$GITHUB_OUTPUT"
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v5.5.0

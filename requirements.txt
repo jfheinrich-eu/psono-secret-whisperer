@@ -1,4 +1,1 @@
-gpg==1.24.1
-packaging==24.2
-pip @ file:///opt/homebrew/Cellar/python%403.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/ensurepip/_bundled/pip-25.0-py3-none-any.whl#sha256=7014abc1d3b7485993957b49ad91a6736c87811228dd1dc4351de5d58385c1af
-wheel @ file:///opt/homebrew/Cellar/python%403.13/3.13.2/libexec/wheel-0.45.1-py3-none-any.whl#sha256=b9235939e2096903717cb6bfc132267f8a7e46deb2ec3ef9c5e234ea301795d0
+

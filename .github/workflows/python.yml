@@ -36,8 +36,24 @@ jobs:
           flake8 main.py
 
       - name: Automatic requirements.txt for Python Project
-        uses: jfheinrich-eu/pipreqs-action@v4.0.3
+        uses: jfheinrich-eu/pipreqs-action@v4.1.0
         with:
-          REPOSITORY: jfheinrich-eu/psono-secret-whisperer
-          PROJECT_NAME: psono-secret-whisperer
-          TOKEN:  ${{ steps.setup-secrets.outputs.github_com_token }}
+          PROJECT_PATH: .
+          REQUIREMENT_PATH: requirements.txt
+          RECURSIVE: "false"
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'requirements.txt'
+
+      - name: Commit changes
+        if: steps.changes.outputs.src == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: ${{ github.ref_name }}
+          commit_message: 'Updated requirements file on ${{ github.ref_name }} [skip-ci]'
+          file_pattern: requirements.txt
+

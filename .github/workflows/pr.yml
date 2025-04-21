@@ -31,6 +31,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   check-pr:
+    if: ${{ github.actor != 'dependabo[bot]' }}
     needs: generate-pr-description
     name: Validate Release Label and Notes
     runs-on: ubuntu-latest

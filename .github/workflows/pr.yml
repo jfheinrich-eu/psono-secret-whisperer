@@ -37,15 +37,15 @@ jobs:
     defaults:
       run:
         shell: bash
-    env:
-      PSONO_CI_API_KEY_ID: ${{ secrets.PSONO_API_KEY_ID }}
-      PSONO_CI_API_SECRET_KEY_HEX: ${{ secrets.PSONO_API_SECRET_KEY_HEX }}
-      PSONO_CI_SERVER_URL: ${{ vars.PSONO_SERVER_URL }}
-      PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_CLI_TOKEN}}
 
     steps:
       - id: setup-secrets
         name: Setup secrets
+        env:
+          PSONO_CI_API_KEY_ID: ${{ secrets.PSONO_API_KEY_ID }}
+          PSONO_CI_API_SECRET_KEY_HEX: ${{ secrets.PSONO_API_SECRET_KEY_HEX }}
+          PSONO_CI_SERVER_URL: ${{ vars.PSONO_SERVER_URL }}
+          PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_CLI_TOKEN }}
         run: |
           sudo apt update >/dev/null && sudo apt install -y curl >/dev/null
           curl https://get.psono.com/psono/psono-ci/x86_64-linux/psonoci --output psonoci >/dev/null && chmod +x psonoci

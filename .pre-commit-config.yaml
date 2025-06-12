@@ -38,10 +38,4 @@ repos:
       - id: pyupgrade
         args: ["--py310-plus"]
 
-  - repo: https://github.com/azz/prettier
-    rev: 1.7.3
-    hooks:
-      - id: prettier
-        files: "\\.(md|yml|yaml|json)$"
-
 default_stages: [pre-commit, pre-push]

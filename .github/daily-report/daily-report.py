@@ -2,11 +2,13 @@
 
 import os
 import smtplib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from github import Github
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # === Konfiguration ===
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -20,8 +22,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 # === Initialisierung ===
 g = Github(GITHUB_TOKEN)
 repo = g.get_repo(REPO_NAME)
-since = datetime.utcnow() - timedelta(days=1)
-openai.api_key = OPENAI_API_KEY
+since = datetime.now(timezone.utc) - timedelta(days=1)
 
 # === Änderungen sammeln ===
 commits = repo.get_commits(since=since)
@@ -51,11 +52,10 @@ Hier ist eine Liste von Git-Commits:
 Erstelle eine tägliche Zusammenfassung in Markdown. Analysiere mögliche Probleme, TODOs oder Code-Smells und gib Empfehlungen.
 """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.4
-    )
+    response = client.chat.completions.create(model="gpt-4",
+                                              messages=[
+                                                  {"role": "user", "content": prompt}],
+                                              temperature=0.4)
     return response.choices[0].message.content.strip()
 
 
@@ -91,7 +91,7 @@ def send_email(subject, body_md):
 
 
 # === Ausführen ===
-heute = datetime.utcnow().strftime("%Y-%m-%d")
+heute = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 subject = f"GitHub Daily Report – {REPO_NAME} – {heute}"
 filename = f"{heute}-{REPO_NAME.replace('/', '-')}.md"
 

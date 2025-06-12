@@ -36,11 +36,14 @@ for commit in commits:
     })
 
 # === GPT-Analyse ===
+
+
 def analyze_commits_with_gpt(commits):
     if not commits:
         return "Keine Commits in den letzten 24h."
-    
-    formatted = "\n".join(f"- [{c['sha'][:7]}] {c['message']} ({c['author']})" for c in commits)
+
+    formatted = "\n".join(
+        f"- [{c['sha'][:7]}] {c['message']} ({c['author']})" for c in commits)
     prompt = f"""
 Hier ist eine Liste von Git-Commits:
 {formatted}
@@ -55,9 +58,12 @@ Erstelle eine tägliche Zusammenfassung in Markdown. Analysiere mögliche Proble
     )
     return response.choices[0].message.content.strip()
 
+
 report_md = analyze_commits_with_gpt(commit_data)
 
 # === Report als E-Mail senden ===
+
+
 def send_email(subject, body_md):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -82,6 +88,7 @@ def send_email(subject, body_md):
         server.starttls()
         server.login(EMAIL_USER, EMAIL_PASSWORD)
         server.sendmail(EMAIL_SENDER, EMAIL_RECEIVER, msg.as_string())
+
 
 # === Ausführen ===
 heute = datetime.utcnow().strftime("%Y-%m-%d")

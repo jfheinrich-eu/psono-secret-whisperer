@@ -28,13 +28,15 @@ since = datetime.now(timezone.utc) - timedelta(days=1)
 commits = repo.get_commits(since=since)
 commit_data = []
 for commit in commits:
-    commit_data.append({
-        "message": commit.commit.message,
-        "author": commit.commit.author.name,
-        "url": commit.html_url,
-        "sha": commit.sha,
-        "date": commit.commit.author.date
-    })
+    commit_data.append(
+        {
+            "message": commit.commit.message,
+            "author": commit.commit.author.name,
+            "url": commit.html_url,
+            "sha": commit.sha,
+            "date": commit.commit.author.date,
+        }
+    )
 
 # === GPT-Analyse ===
 
@@ -44,7 +46,8 @@ def analyze_commits_with_gpt(commits):
         return "Keine Commits in den letzten 24h."
 
     formatted = "\n".join(
-        f"- [{c['sha'][:7]}] {c['message']} ({c['author']})" for c in commits)
+        f"- [{c['sha'][:7]}] {c['message']} ({c['author']})" for c in commits
+    )
     prompt = f"""
 Hier ist eine Liste von Git-Commits:
 {formatted}
@@ -52,10 +55,9 @@ Hier ist eine Liste von Git-Commits:
 Erstelle eine tägliche Zusammenfassung in Markdown. Analysiere mögliche Probleme, TODOs oder Code-Smells und gib Empfehlungen.
 """
 
-    response = client.chat.completions.create(model="gpt-4",
-                                              messages=[
-                                                  {"role": "user", "content": prompt}],
-                                              temperature=0.4)
+    response = client.chat.completions.create(
+        model="gpt-4", messages=[{"role": "user", "content": prompt}], temperature=0.4
+    )
     return response.choices[0].message.content.strip()
 
 
@@ -83,7 +85,7 @@ def send_email(subject, body_md):
     msg.attach(part1)
     msg.attach(part2)
 
-    with smtplib.SMTP("smtp.gmail.com", port='587') as server:
+    with smtplib.SMTP("smtp.gmail.com", port="587") as server:
         server.ehlo()
         server.starttls()
         server.login(EMAIL_USER, EMAIL_PASSWORD)

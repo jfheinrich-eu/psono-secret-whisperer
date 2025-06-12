@@ -1,6 +1,5 @@
-# === GitHub Action Workflow-Datei (separat speichern unter .github/workflows/daily-report.yml ===
 name: Daily GitHub Report
-#
+
 on:
   schedule:
     - cron: '0 6 * * *'  # täglich um 6:00 UTC

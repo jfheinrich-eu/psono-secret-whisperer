@@ -52,11 +52,13 @@ def analyze_commits_with_gpt(commits):
 Hier ist eine Liste von Git-Commits:
 {formatted}
 
-Erstelle eine tägliche Zusammenfassung in Markdown. Analysiere mögliche Probleme, TODOs oder Code-Smells und gib Empfehlungen.
+Erstelle eine tägliche Zusammenfassung in Markdown.
+Analysiere mögliche Probleme, TODOs oder Code-Smells und gib Empfehlungen.
 """
 
     response = client.chat.completions.create(
-        model="gpt-4", messages=[{"role": "user", "content": prompt}], temperature=0.4
+        model="gpt-4", messages=[{"role": "user", "content": prompt}],
+        temperature=0.4
     )
     return response.choices[0].message.content.strip()
 

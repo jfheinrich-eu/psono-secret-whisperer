@@ -18,8 +18,7 @@ def main():
     cmd = []
     psono_env = {}
     psono_env["PSONO_CI_API_KEY_ID"] = os.environ["INPUT_CI_API_KEY_ID"]
-    psono_env["PSONO_CI_API_SECRET_KEY_HEX"] = \
-        os.environ["INPUT_CI_API_SECRET_KEY_HEX"]
+    psono_env["PSONO_CI_API_SECRET_KEY_HEX"] = os.environ["INPUT_CI_API_SECRET_KEY_HEX"]
     psono_env["PSONO_CI_SERVER_URL"] = os.environ["INPUT_CI_SERVER_URL"]
 
     if os.environ.get("CI") is not None:
@@ -52,8 +51,7 @@ def main():
         cmdval.append(field)
         try:
             secret = subprocess.run(
-                cmdval, capture_output=True, text=True, check=True,
-                env=psono_env
+                cmdval, capture_output=True, text=True, check=True, env=psono_env
             )
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")

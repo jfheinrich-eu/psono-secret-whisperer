@@ -57,7 +57,7 @@ Analysiere mögliche Probleme, TODOs oder Code-Smells und gib Empfehlungen.
 """
 
     response = client.chat.completions.create(
-        model="gpt-4", messages=[{"role": "user", "content": prompt}],
+        model="gpt-4.1", messages=[{"role": "user", "content": prompt}],
         temperature=0.4
     )
     return response.choices[0].message.content.strip()

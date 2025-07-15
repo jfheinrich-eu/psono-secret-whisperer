@@ -15,8 +15,8 @@ jobs:
       - id: setup-secrets
         name: Setup secrets
         env:
-          PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_TOKEN_ID }}
-          PSONO_DAILY_REPORT_ENV: ${{ secrets.PSONO_DAILY_REPORT_ENV }}
+          PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_CLI_TOKEN }}
+          PSONO_DAILY_REPORT_ENV: ${{ secrets.PSONO_DAILY_REPORT_ACTION_ENV }}
           PSONO_CI_API_KEY_ID: ${{ secrets.PSONO_API_KEY_ID }}
           PSONO_CI_API_SECRET_KEY_HEX: ${{ secrets.PSONO_API_SECRET_KEY_HEX }}
           PSONO_CI_SERVER_URL: ${{ vars.PSONO_SERVER_URL }}

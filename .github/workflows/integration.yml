@@ -29,3 +29,9 @@ jobs:
         run: |
           test "${{ steps.selftest.outputs.secret1 }}" == "ghcr.io"
           test "${{ steps.selftest.outputs.secret2 }}" == "jfheinrich"
+
+      - name: Summary on fail
+        if: always()
+        run: |
+          SUMMARY=$'# Integration Test Job Summary'
+          echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY

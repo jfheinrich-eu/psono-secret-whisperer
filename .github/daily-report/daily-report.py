@@ -18,6 +18,7 @@ EMAIL_USER = "joerg.f.heinrich@googlemail.com"
 EMAIL_RECEIVER = "admin@jfheinrich.eu"
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL")
 
 # === Initialisierung ===
 g = Github(GITHUB_TOKEN)
@@ -57,7 +58,7 @@ Analysiere mögliche Probleme, TODOs oder Code-Smells und gib Empfehlungen.
 """
 
     response = client.chat.completions.create(
-        model="gpt-4.1", messages=[{"role": "user", "content": prompt}],
+        model=OPENAI_MODEL, messages=[{"role": "user", "content": prompt}],
         temperature=0.4
     )
     return response.choices[0].message.content.strip()

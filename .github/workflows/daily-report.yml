@@ -49,4 +49,5 @@ jobs:
           OPENAI_API_KEY: ${{ steps.setup-secrets.outputs.ci_openai_api_key }}
           EMAIL_PASSWORD: ${{ steps.setup-secrets.outputs.ci_email_password }}
           GITHUB_TOKEN: ${{ steps.setup-secrets.outputs.ci_registry_github_token }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
         run: cd .github/daily-report && python daily-report.py

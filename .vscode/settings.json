@@ -1,5 +1,14 @@
 {
     "git.enableCommitSigning": true,
     "jira-plugin.workingProject": "",
-    "scm.alwaysShowRepositories": false
+    "scm.alwaysShowRepositories": false,
+    "editor.accessibilityPageSize": 10,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "github.copilot.chat.localeOverride": "en",
+    "github.copilot.chat.commitMessageGeneration.instructions": [
+        {
+            "text": "Use conventional commit message format."
+        }
+    ],
+    "githubPullRequests.pullRequestDescription": "Copilot"
 }

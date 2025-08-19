@@ -38,7 +38,7 @@ jobs:
             echo "✅ This is a merge commit"
             
             # Get the PR number from the merge commit message
-            pr_number=$(git log -1 --format="%s" | grep -o "#[0-9]*" | sed 's/#//')
+            pr_number=$(git log -1 --format="%s" | grep -o "#[0-9]\+" | sed 's/#//')
             
             if [ -n "$pr_number" ]; then
               echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
@@ -67,7 +67,6 @@ jobs:
         if: steps.check-release.outputs.is_release == 'true'
         with:
           fetch-depth: 0
-
       - uses: jefflinse/pr-semver-bump@v1.7.3
         if: steps.check-release.outputs.is_release == 'true'
         name: Bump and Tag Version

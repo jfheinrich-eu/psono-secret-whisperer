@@ -1,6 +1,6 @@
 name: Create new release
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 on:
@@ -35,9 +35,12 @@ jobs:
           release_name: 'Release ${{ github.ref_name }}'
           body: ${{ steps.changelog.outputs.changes }}
 
-      - name: Commit CHANGELOG.md
-        uses: stefanzweifel/git-auto-commit-action@v6
+      - name: Create Pull Request for CHANGELOG.md
+        uses: peter-evans/create-pull-request@v5
         with:
-          branch: master
-          commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
-          file_pattern: CHANGELOG.md
+          commit-message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
+          branch: changelog-update-${{ github.ref_name }}
+          title: 'Update CHANGELOG.md for ${{ github.ref_name }}'
+          body: 'Automated update of CHANGELOG.md by workflow.'
+          base: main
+          add-paths: CHANGELOG.md

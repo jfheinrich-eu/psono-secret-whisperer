@@ -5,7 +5,14 @@ permissions:
   statuses: write
   actions: read
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
   integration-test:
@@ -15,8 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Self test
+        if: ${{ github.actor != 'dependabot[bot]' }}
         id: selftest
-
         # Put your action repo here
         uses: ./
         with:

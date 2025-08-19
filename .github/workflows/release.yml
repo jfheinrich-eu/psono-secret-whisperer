@@ -1,18 +1,28 @@
 name: Release
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
   bump-tag-version:
     name: Bump and Tag Version
     runs-on: ubuntu-latest
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'develop' &&
+      (
+        contains(github.event.pull_request.labels.*.name, 'major release') ||
+        contains(github.event.pull_request.labels.*.name, 'minor release') ||
+        contains(github.event.pull_request.labels.*.name, 'patch release')
+      ) &&
+      !contains(github.event.pull_request.labels.*.name, 'skip release')
     defaults:
       run:
         shell: bash

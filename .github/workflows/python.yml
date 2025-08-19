@@ -10,10 +10,10 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Python 3.9
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5.6.0
         with:
-          python-version: "3.9"
+          python-version: "3.13"
 
       - uses: actions/checkout@v4
 
@@ -36,10 +36,13 @@ jobs:
             src:
               - 'requirements.txt'
 
-      - name: Commit changes
+      - name: Create Pull Request for requirements.txt
         if: steps.changes.outputs.src == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: peter-evans/create-pull-request@v5
         with:
-          branch: ${{ github.ref_name }}
-          commit_message: 'Updated requirements file on ${{ github.ref_name }} [skip-ci]'
-          file_pattern: requirements.txt
+          commit-message: 'Updated requirements file on ${{ github.ref_name }} [skip-ci]'
+          branch: update-requirements-${{ github.ref_name }}
+          title: 'Update requirements.txt on ${{ github.ref_name }}'
+          body: 'Automatisches Update der requirements.txt durch Workflow.'
+          base: develop
+          add-paths: requirements.txt

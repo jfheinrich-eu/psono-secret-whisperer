@@ -32,7 +32,7 @@ jobs:
           echo "::add-mask::$ci_psono_registry_github_token"
           echo "ci_registry_github_token=$ci_psono_registry_github_token" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: jefflinse/pr-semver-bump@v1.7.3
         name: Bump and Tag Version

@@ -1,8 +1,7 @@
 name: Release
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - main
 
@@ -14,15 +13,6 @@ jobs:
   bump-tag-version:
     name: Bump and Tag Version
     runs-on: ubuntu-latest
-    if: >
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.head.ref == 'develop' &&
-      (
-        contains(github.event.pull_request.labels.*.name, 'major release') ||
-        contains(github.event.pull_request.labels.*.name, 'minor release') ||
-        contains(github.event.pull_request.labels.*.name, 'patch release')
-      ) &&
-      !contains(github.event.pull_request.labels.*.name, 'skip release')
     defaults:
       run:
         shell: bash
@@ -33,7 +23,38 @@ jobs:
       PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_CLI_TOKEN}}
 
     steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Check if merge commit from develop with release label
+        id: check-release
+        run: |
+          # Check if this is a merge commit from develop
+          merge_commit=$(git log -1 --format="%H")
+          parents=$(git log -1 --format="%P" $merge_commit | wc -w)
+          
+          if [ $parents -eq 2 ]; then
+            echo "✅ This is a merge commit"
+            
+            # Get the PR number from the merge commit message
+            pr_number=$(git log -1 --format="%s" | grep -o "#[0-9]*" | sed 's/#//')
+            
+            if [ -n "$pr_number" ]; then
+              echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+              echo "✅ Found PR number: $pr_number"
+              echo "is_release=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "❌ No PR number found in merge commit"
+              echo "is_release=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "❌ Not a merge commit, skipping release"
+            echo "is_release=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - id: setup-secrets
+        if: steps.check-release.outputs.is_release == 'true'
         name: Setup secrets
         run: |
           sudo apt update >/dev/null && sudo apt install -y curl >/dev/null
@@ -43,8 +64,12 @@ jobs:
           echo "ci_registry_github_token=$ci_psono_registry_github_token" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v5
+        if: steps.check-release.outputs.is_release == 'true'
+        with:
+          fetch-depth: 0
 
       - uses: jefflinse/pr-semver-bump@v1.7.3
+        if: steps.check-release.outputs.is_release == 'true'
         name: Bump and Tag Version
         with:
           mode: bump

@@ -42,7 +42,7 @@ jobs:
                 ! "${{ contains(github.event.pull_request.labels.*.name, 'minor release') }}" == "true" &&
                 ! "${{ contains(github.event.pull_request.labels.*.name, 'patch release') }}" == "true" &&
                 ! "${{ contains(github.event.pull_request.labels.*.name, 'skip release') }}" == "true" ]]; then
-            echo "❌ ERROR: Release PR von develop → main muss eines der folgenden Labels haben:"
+            echo "❌ ERROR: Release PR from develop → main must have one of the following labels:"
             echo "  • major release"
             echo "  • minor release"
             echo "  • patch release"
@@ -52,9 +52,9 @@ jobs:
           fi
 
           if [[ "${{ contains(github.event.pull_request.labels.*.name, 'skip release') }}" == "true" ]]; then
-            echo "✅ PR ist mit 'skip release' markiert - kein Release wird erstellt"
+            echo "✅ PR is marked with 'skip release' - no release will be created"
           else
-            echo "✅ PR hat gültiges Release-Label - Release wird bei Merge erstellt"
+            echo "✅ PR has valid release label - release will be created on merge"
           fi
           echo "label-check=success" >> "$GITHUB_OUTPUT"
 

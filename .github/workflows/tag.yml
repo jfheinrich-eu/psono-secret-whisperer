@@ -41,6 +41,6 @@ jobs:
           commit-message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
           branch: changelog-update-${{ github.ref_name }}
           title: 'Update CHANGELOG.md for ${{ github.ref_name }}'
-          body: 'Automatisches Update der CHANGELOG.md durch Workflow.'
+          body: 'Automated update of CHANGELOG.md by workflow.'
           base: main
           add-paths: CHANGELOG.md

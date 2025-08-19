@@ -42,4 +42,4 @@ jobs:
         if: ${{ github.actor == 'dependabot[bot]' }}
         run: |
           echo "✅ Skipping integration test for dependabot PR"
-          echo "Dependabot PRs werden automatisch übersprungen"
+          echo "Dependabot PRs are automatically skipped"

@@ -60,7 +60,7 @@ jobs:
           else
             echo "status=success" >> "$GITHUB_OUTPUT"
           fi
-          
+
       - name: Fail if check failed
         if: steps.check_outputs.outputs.status == 'fail'
         run: |
@@ -71,4 +71,3 @@ jobs:
         run: |
           echo "Output check successful!"
           exit 0
-          

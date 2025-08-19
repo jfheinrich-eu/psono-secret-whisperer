@@ -1,19 +1,29 @@
-name: Integration Test
+name: Integration-Test
 permissions:
   contents: read
   pull-requests: write
+  statuses: write
+  actions: read
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
-  build:
+  integration-test:
+    name: Integration-Test
     if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Self test
+        if: ${{ github.actor != 'dependabot[bot]' }}
         id: selftest
-
         # Put your action repo here
         uses: ./
         with:
@@ -25,7 +35,39 @@ jobs:
           secret_fields: CI_REGISTRY,CI_REGISTRY_USER
           mask_secrets: CI_REGISTRY_USER
 
-      - name: Check outputs
+      - name: Check outputs and write summary
+        id: check_outputs
+        if: always()
         run: |
-          test "${{ steps.selftest.outputs.secret1 }}" == "ghcr.io"
-          test "${{ steps.selftest.outputs.secret2 }}" == "jfheinrich"
+          result1="success"
+          result2="success"
+          echo "## Output Check Results" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.selftest.outputs.secret1 }}" != "ghcr.io" ]; then
+            echo "- ❌ secret1 mismatch: got '${{ steps.selftest.outputs.secret1 }}'" >> $GITHUB_STEP_SUMMARY
+            result1="fail"
+          else
+            echo "- ✅ secret1 is correct" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ steps.selftest.outputs.secret2 }}" != "jfheinrich" ]; then
+            echo "- ❌ secret2 mismatch: got '${{ steps.selftest.outputs.secret2 }}'" >> $GITHUB_STEP_SUMMARY
+            result2="fail"
+          else
+            echo "- ✅ secret2 is correct" >> $GITHUB_STEP_SUMMARY
+          fi
+          # Combine results
+          if [ "$result1" = "fail" ] || [ "$result2" = "fail" ]; then
+            echo "status=fail" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=success" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fail if check failed
+        if: steps.check_outputs.outputs.status == 'fail'
+        run: |
+          echo "Output check failed!"
+          exit 1
+      - name: Success if check successful
+        if: steps.check_outputs.outputs.status == 'success'
+        run: |
+          echo "Output check successful!"
+          exit 0

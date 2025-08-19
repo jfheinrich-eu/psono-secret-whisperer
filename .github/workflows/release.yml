@@ -1,14 +1,28 @@
 name: Release
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - main
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   bump-tag-version:
     name: Bump and Tag Version
     runs-on: ubuntu-latest
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'develop' &&
+      (
+        contains(github.event.pull_request.labels.*.name, 'major release') ||
+        contains(github.event.pull_request.labels.*.name, 'minor release') ||
+        contains(github.event.pull_request.labels.*.name, 'patch release')
+      ) &&
+      !contains(github.event.pull_request.labels.*.name, 'skip release')
     defaults:
       run:
         shell: bash
@@ -28,9 +42,9 @@ jobs:
           echo "::add-mask::$ci_psono_registry_github_token"
           echo "ci_registry_github_token=$ci_psono_registry_github_token" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: jefflinse/pr-semver-bump@v1.7.2
+      - uses: jefflinse/pr-semver-bump@v1.7.3
         name: Bump and Tag Version
         with:
           mode: bump

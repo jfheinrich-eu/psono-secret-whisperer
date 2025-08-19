@@ -14,13 +14,13 @@ on:
 
 jobs:
   build:
-    if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Self test
+        if: ${{ github.actor != 'dependabot[bot]' }}
         id: selftest
-
         # Put your action repo here
         uses: ./
         with:
@@ -33,6 +33,13 @@ jobs:
           mask_secrets: CI_REGISTRY_USER
 
       - name: Check outputs
+        if: ${{ github.actor != 'dependabot[bot]' }}
         run: |
           test "${{ steps.selftest.outputs.secret1 }}" == "ghcr.io"
           test "${{ steps.selftest.outputs.secret2 }}" == "jfheinrich"
+
+      - name: Skip for dependabot
+        if: ${{ github.actor == 'dependabot[bot]' }}
+        run: |
+          echo "✅ Skipping integration test for dependabot PR"
+          echo "Dependabot PRs werden automatisch übersprungen"

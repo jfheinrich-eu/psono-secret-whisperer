@@ -33,14 +33,14 @@ jobs:
               // Check for specific label
               if (pr.labels.some(l => l.name === 'major release') || pr.labels.some(l => l.name === 'minor release') || pr.labels.some(l => l.name === 'patch release')) {
                 console.log('Commit came through PR with label!');
-                echo "find-pr=success" >> process.env.GITHUB_OUTPUT;
+                core.setOutput('find-pr', 'success');
               }
             } else {
               console.log('No PR found for this commit.');
                 core.setOutput('find-pr', 'success');
               }
             } else {
-              console.log('Kein PR für diesen Commit gefunden.');
+              console.log('No PR found for this commit.');
               core.setOutput('find-pr', 'failed');
             }
 

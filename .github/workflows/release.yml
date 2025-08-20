@@ -1,8 +1,7 @@
 name: Release
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - main
 
@@ -14,27 +13,109 @@ jobs:
   bump-tag-version:
     name: Bump and Tag Version
     runs-on: ubuntu-latest
-    if: >
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.head.ref == 'develop' &&
-      (
-        contains(github.event.pull_request.labels.*.name, 'major release') ||
-        contains(github.event.pull_request.labels.*.name, 'minor release') ||
-        contains(github.event.pull_request.labels.*.name, 'patch release')
-      ) &&
-      !contains(github.event.pull_request.labels.*.name, 'skip release')
     defaults:
       run:
         shell: bash
-    env:
-      PSONO_CI_API_KEY_ID: ${{ secrets.PSONO_API_KEY_ID }}
-      PSONO_CI_API_SECRET_KEY_HEX: ${{ secrets.PSONO_API_SECRET_KEY_HEX }}
-      PSONO_CI_SERVER_URL: ${{ vars.PSONO_SERVER_URL }}
-      PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_CLI_TOKEN}}
 
     steps:
-      - id: setup-secrets
-        name: Setup secrets
+      - name: Find PR for commit and validate release criteria
+        id: find-pr
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const commitSha = process.env.GITHUB_SHA;
+            
+            // Search for merged PRs containing this commit
+            const prs = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} type:pr is:merged ${commitSha}`
+            });
+            
+            let stepStatus = 'failed';
+            let skipReason = '';
+            
+            if (prs.data.items.length > 0) {
+              const pr = prs.data.items[0];
+              const labelNames = pr.labels.map(l => l.name);
+              
+              console.log(`Found PR #${pr.number} with labels:`, labelNames);
+              
+              // Check if PR has "skip release" label
+              if (labelNames.includes('skip release')) {
+                console.log('❌ PR has "skip release" label - no release will be created');
+                skipReason = 'skip-release-label';
+                stepStatus = 'skipped';
+              }
+              // Check if PR is from develop branch (GitHub API call needed)
+              else {
+                const prDetails = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number
+                });
+                
+                if (prDetails.data.head.ref !== 'develop') {
+                  console.log(`❌ PR is not from develop branch (from: ${prDetails.data.head.ref})`);
+                  skipReason = 'not-from-develop';
+                  stepStatus = 'skipped';
+                }
+                // Check for release labels
+                else {
+                  const releaseLabels = ['major release', 'minor release', 'patch release'];
+                  const hasReleaseLabel = labelNames.some(l => releaseLabels.includes(l));
+                  
+                  if (hasReleaseLabel) {
+                    console.log('✅ PR from develop with valid release label found!');
+                    stepStatus = 'success';
+                  } else {
+                    console.log('❌ PR has no release label (major/minor/patch release)');
+                    skipReason = 'no-release-label';
+                    stepStatus = 'skipped';
+                  }
+                }
+              }
+            } else {
+              console.log('❌ No merged PR found for this commit');
+              skipReason = 'no-pr-found';
+              stepStatus = 'skipped';
+            }
+            
+            core.setOutput('status', stepStatus);
+            core.setOutput('skip-reason', skipReason);
+
+      - name: Log skip reason
+        if: ${{ steps.find-pr.outputs.status == 'skipped' }}
+        run: |
+          case "${{ steps.find-pr.outputs.skip-reason }}" in
+            "skip-release-label")
+              echo "🚫 Release skipped: PR has 'skip release' label"
+              ;;
+            "not-from-develop")
+              echo "🚫 Release skipped: PR is not from develop branch"
+              ;;
+            "no-release-label")
+              echo "🚫 Release skipped: PR has no release label (major/minor/patch release)"
+              ;;
+            "no-pr-found")
+              echo "🚫 Release skipped: No merged PR found for this commit"
+              ;;
+            *)
+              echo "🚫 Release skipped: Unknown reason"
+              ;;
+          esac
+
+      - uses: actions/checkout@v5
+        if: ${{ steps.find-pr.outputs.status == 'success' }}
+        with:
+          fetch-depth: 0
+
+      - name: Setup secrets
+        if: ${{ steps.find-pr.outputs.status == 'success' }}
+        id: setup-secrets
+        env:
+          PSONO_CI_API_KEY_ID: ${{ secrets.PSONO_API_KEY_ID }}
+          PSONO_CI_API_SECRET_KEY_HEX: ${{ secrets.PSONO_API_SECRET_KEY_HEX }}
+          PSONO_CI_SERVER_URL: ${{ vars.PSONO_SERVER_URL }}
+          PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_CLI_TOKEN }}
         run: |
           sudo apt update >/dev/null && sudo apt install -y curl >/dev/null
           curl https://get.psono.com/psono/psono-ci/x86_64-linux/psonoci --output psonoci >/dev/null && chmod +x psonoci
@@ -42,9 +123,8 @@ jobs:
           echo "::add-mask::$ci_psono_registry_github_token"
           echo "ci_registry_github_token=$ci_psono_registry_github_token" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v5
-
       - uses: jefflinse/pr-semver-bump@v1.7.3
+        if: ${{ steps.find-pr.outputs.status == 'success' }}
         name: Bump and Tag Version
         with:
           mode: bump

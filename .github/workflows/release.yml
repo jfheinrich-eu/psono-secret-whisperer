@@ -27,22 +27,21 @@ jobs:
             const prs = await github.rest.search.issuesAndPullRequests({
               q: `repo:${context.repo.owner}/${context.repo.repo} type:pr is:merged ${commitSha}`
             });
+            stepStatus = 'failed';
             if (prs.data.items.length > 0) {
               const pr = prs.data.items[0];
               console.log(`PR #${pr.number} labels:`, pr.labels.map(l => l.name));
               // Check for specific label
-              if (pr.labels.some(l => l.name === 'major release') || pr.labels.some(l => l.name === 'minor release') || pr.labels.some(l => l.name === 'patch release')) {
+              const releaseLabels = ['major release', 'minor release', 'patch release'];
+              if (pr.labels.some(l => releaseLabels.includes(l.name))) {
                 console.log('Commit came through PR with label!');
-                core.setOutput('find-pr', 'success');
+                stepStatus = 'success';
               }
-            } else {
-              console.log('No PR found for this commit.');
-                core.setOutput('find-pr', 'success');
-              }
-            } else {
-              console.log('No PR found for this commit.');
-              core.setOutput('find-pr', 'failed');
             }
+            if(stepStatus === 'failed') {
+              console.log('No PR found for this commit.');
+            }
+            core.setOutput('find-pr', stepStatus);
 
       - uses: actions/checkout@v5
         with:

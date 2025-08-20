@@ -16,71 +16,43 @@ jobs:
     defaults:
       run:
         shell: bash
-    env:
-      PSONO_CI_API_KEY_ID: ${{ secrets.PSONO_API_KEY_ID }}
-      PSONO_CI_API_SECRET_KEY_HEX: ${{ secrets.PSONO_API_SECRET_KEY_HEX }}
-      PSONO_CI_SERVER_URL: ${{ vars.PSONO_SERVER_URL }}
-      PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_CLI_TOKEN}}
 
     steps:
+      - name: Find PR for commit
+        id: find-pr
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const commitSha = process.env.GITHUB_SHA;
+            const prs = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} type:pr is:merged ${commitSha}`
+            });
+            let stepStatus = 'failed';
+            if (prs.data.items.length > 0) {
+              const pr = prs.data.items[0];
+              console.log(`PR #${pr.number} labels:`, pr.labels.map(l => l.name));
+              // Check for specific label
+              const releaseLabels = ['major release', 'minor release', 'patch release'];
+              if (pr.labels.some(l => releaseLabels.includes(l.name))) {
+                console.log('Commit came through PR with label!');
+                stepStatus = 'success';
+              }
+            }
+            if (stepStatus === 'failed') {
+              console.log('No PR found for this commit.');
+            }
+            core.setOutput('find-pr', stepStatus);
+
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Check if merge commit from develop with release label
-        id: check-release
-        run: |
-          # Check if this is a merge commit from develop
-          merge_commit=$(git log -1 --format="%H")
-          parents=$(git log -1 --format="%P" "$merge_commit" | wc -w)
-          
-          if [ $parents -eq 2 ]; then
-            echo "✅ This is a merge commit"
-            
-            # Get the PR number associated with this commit using GitHub CLI
-            pr_number=$(gh pr list --state merged --base main --json number,mergeCommit | jq -r --arg mc "$merge_commit" '.[] | select(.mergeCommit == $mc) | .number')
-
-            # If pr_number is empty, try to find by commit message (for squash/rebase merges)
-            if [ -z "$pr_number" ]; then
-              commit_message="$(git log -1 --format="%s")"
-              pr_list_json=$(gh pr list --state merged --base main --search "$commit_message" --limit 5 --json number,title)
-              pr_count=$(echo "$pr_list_json" | jq 'length')
-              if [ "$pr_count" -eq 1 ]; then
-                pr_number=$(echo "$pr_list_json" | jq -r '.[0].number')
-              elif [ "$pr_count" -gt 1 ]; then
-                echo "⚠️ Multiple PRs found matching commit message, unable to determine PR number uniquely"
-              fi
-            fi
-
-            if [ -n "$pr_number" ]; then
-              echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
-              echo "✅ Found PR number: $pr_number"
-              echo "is_release=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "❌ No PR number found for merge commit or commit message"
-              echo "is_release=false" >> "$GITHUB_OUTPUT"
-            fi
-          else
-            echo "❌ Not a merge commit, skipping release"
-            echo "is_release=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - id: setup-secrets
-        if: steps.check-release.outputs.is_release == 'true'
-        name: Setup secrets
-        run: |
-          sudo apt update >/dev/null && sudo apt install -y curl >/dev/null
-          curl https://get.psono.com/psono/psono-ci/x86_64-linux/psonoci --output psonoci >/dev/null && chmod +x psonoci
-          ci_psono_registry_github_token="$(./psonoci secret get ${PSONO_GITHUB_TOKEN_ID} password)"
-          echo "::add-mask::$ci_psono_registry_github_token"
-          echo "ci_registry_github_token=$ci_psono_registry_github_token" >> "$GITHUB_OUTPUT"
-
       - uses: jefflinse/pr-semver-bump@v1.7.3
-        if: steps.check-release.outputs.is_release == 'true'
+        if: ${{ steps.find-pr.outputs.find-pr == 'success' }}
         name: Bump and Tag Version
         with:
           mode: bump
-          repo-token: ${{ steps.setup-secrets.outputs.ci_registry_github_token }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           major-label: major release
           minor-label: minor release
           patch-label: patch release

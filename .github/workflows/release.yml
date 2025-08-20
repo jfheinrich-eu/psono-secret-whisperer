@@ -30,14 +30,18 @@ jobs:
             if (prs.data.items.length > 0) {
               const pr = prs.data.items[0];
               console.log(`PR #${pr.number} labels:`, pr.labels.map(l => l.name));
-              // Prüfe auf spezifisches Label
+              // Check for specific label
               if (pr.labels.some(l => l.name === 'major release') || pr.labels.some(l => l.name === 'minor release') || pr.labels.some(l => l.name === 'patch release')) {
-                console.log('Commit kam durch PR mit Label!');
+                console.log('Commit came through PR with label!');
                 echo "find-pr=success" >> process.env.GITHUB_OUTPUT;
               }
             } else {
+              console.log('No PR found for this commit.');
+                core.setOutput('find-pr', 'success');
+              }
+            } else {
               console.log('Kein PR für diesen Commit gefunden.');
-              echo "find-pr=failed" >> process.env.GITHUB_OUTPUT;
+              core.setOutput('find-pr', 'failed');
             }
 
       - uses: actions/checkout@v5

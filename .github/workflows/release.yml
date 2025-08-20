@@ -16,18 +16,36 @@ jobs:
     defaults:
       run:
         shell: bash
-    env:
-      PSONO_CI_API_KEY_ID: ${{ secrets.PSONO_API_KEY_ID }}
-      PSONO_CI_API_SECRET_KEY_HEX: ${{ secrets.PSONO_API_SECRET_KEY_HEX }}
-      PSONO_CI_SERVER_URL: ${{ vars.PSONO_SERVER_URL }}
-      PSONO_GITHUB_TOKEN_ID: ${{ secrets.PSONO_GITHUB_CLI_TOKEN}}
 
     steps:
+      - name: Find PR for commit
+        id: find-pr
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const commitSha = process.env.GITHUB_SHA;
+            const prs = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} type:pr is:merged ${commitSha}`
+            });
+            if (prs.data.items.length > 0) {
+              const pr = prs.data.items[0];
+              console.log(`PR #${pr.number} labels:`, pr.labels.map(l => l.name));
+              // Prüfe auf spezifisches Label
+              if (pr.labels.some(l => l.name === 'major release') || pr.labels.some(l => l.name === 'minor release') || pr.labels.some(l => l.name === 'patch release')) {
+                console.log('Commit kam durch PR mit Label!');
+                echo "find-pr=success" >> process.env.GITHUB_OUTPUT;
+              }
+            } else {
+              console.log('Kein PR für diesen Commit gefunden.');
+              echo "find-pr=failed" >> process.env.GITHUB_OUTPUT;
+            }
+
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - uses: jefflinse/pr-semver-bump@v1.7.3
+        if: ${{ steps.find-pr.outputs.find-pr == 'success' }}
         name: Bump and Tag Version
         with:
           mode: bump

@@ -27,7 +27,7 @@ jobs:
             const prs = await github.rest.search.issuesAndPullRequests({
               q: `repo:${context.repo.owner}/${context.repo.repo} type:pr is:merged ${commitSha}`
             });
-            stepStatus = 'failed';
+            let stepStatus = 'failed';
             if (prs.data.items.length > 0) {
               const pr = prs.data.items[0];
               console.log(`PR #${pr.number} labels:`, pr.labels.map(l => l.name));
@@ -38,7 +38,7 @@ jobs:
                 stepStatus = 'success';
               }
             }
-            if(stepStatus === 'failed') {
+            if (stepStatus === 'failed') {
               console.log('No PR found for this commit.');
             }
             core.setOutput('find-pr', stepStatus);

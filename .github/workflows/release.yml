@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Find PR for commit and validate release criteria
         id: find-pr
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const commitSha = process.env.GITHUB_SHA;

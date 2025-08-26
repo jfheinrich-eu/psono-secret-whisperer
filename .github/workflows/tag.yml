@@ -36,7 +36,7 @@ jobs:
           body: ${{ steps.changelog.outputs.changes }}
 
       - name: Create Pull Request for CHANGELOG.md
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           commit-message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
           branch: changelog-update-${{ github.ref_name }}

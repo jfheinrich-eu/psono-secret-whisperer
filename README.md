@@ -59,7 +59,7 @@ jobs:
             secret_fields: 'API_KEY,DATABASE_URL,OTHER_SECRET'
             mask_secrets: 'API_KEY,OTHER_SECRET'
             # The first field (secret1) will be accessible as "api_key
-            # the other two will be still accessable as "secret2" and "secret3"
+            # the other two will be still accessible as "secret2" and "secret3"
             custom_field_names: 'api_key'
 
       # Access secrets

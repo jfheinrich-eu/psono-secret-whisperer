@@ -6,17 +6,19 @@ import subprocess
 # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
 
 
-def set_github_action_output(output_name, output_value):
+def set_github_action_output(output_name: str, output_value: str) -> None:
     f = open(os.path.abspath(os.environ["GITHUB_OUTPUT"]), "a")
     f.write(f"{output_name}={output_value}\n")
     f.close()
 
 
 def main():
-    secret_type = os.environ["INPUT_SECRET_TYPE"]
-    mask_secrets = os.environ["INPUT_MASK_SECRETS"].split(",")
-    cmd = []
-    psono_env = {}
+    secret_type: str = os.environ["INPUT_SECRET_TYPE"]
+    mask_secrets: list[str] = os.environ["INPUT_MASK_SECRETS"].split(",")
+    custom_field_names: list[str] = os.environ["INPUT_CUSTOM_FIELD_NAMES"].split(
+        ",")
+    cmd: list[str] = []
+    psono_env: dict[str, str] = {}
     psono_env["PSONO_CI_API_KEY_ID"] = os.environ["INPUT_CI_API_KEY_ID"]
     psono_env["PSONO_CI_API_SECRET_KEY_HEX"] = \
         os.environ["INPUT_CI_API_SECRET_KEY_HEX"]
@@ -65,7 +67,13 @@ def main():
         if field in mask_secrets:
             print(f"::add-mask::{secret.stdout}\n")
 
-        set_github_action_output(f"secret{count}", secret.stdout)
+        if (len(custom_field_names) >= count and
+                custom_field_names[count - 1].strip() != ""):
+            set_github_action_output(
+                custom_field_names[count - 1].strip(), secret.stdout
+            )
+        else:
+            set_github_action_output(f"secret{count}", secret.stdout)
 
 
 if __name__ == "__main__":

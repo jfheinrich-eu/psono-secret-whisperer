@@ -56,14 +56,17 @@ jobs:
             ci_server_url: 'https://your-psono-server.com'
             secret_id: ${{ secrets.SECRET_ID }}
             secret_type: 'env'
-            secret_fields: 'API_KEY DATABASE_URL,OTHER_SECRET'
+            secret_fields: 'API_KEY,DATABASE_URL,OTHER_SECRET'
             mask_secrets: 'API_KEY,OTHER_SECRET'
+            # The first field (secret1) will be accessible as "api_key
+            # the other two will be still accessible as "secret2" and "secret3"
+            custom_field_names: 'api_key'
 
       # Access secrets
       - name: Use secrets
         run: |
-          echo "API Key: ${{ steps.selftest.outputs.secret1 }}"
-          echo "Database URL: ${{ steps.selftest.outputs.secret2 }}"
+          echo "API Key: ${{ steps.psono-secrets.outputs.api_key }}"
+          echo "Database URL: ${{ steps.psono-secrets.outputs.secret2 }}"
 ```
 
 ## ➡️ Inputs <a name="inputs"></a>
@@ -76,12 +79,15 @@ jobs:
 | `secret_id`             | secret id to fetch                                    | Yes      | -                 |
 | `secret_fields`         | Comma-separated list of secret keys to retrieve       | No       | username,password |
 | `mask_secrets`          | Comma-separated list of secret keys to masked         | No       | -                 |
+| `custom_field_names`    | Comma-separated list of output field names            | No       | -                 |
 
 ## ⬅️ Outputs <a name="outputs"></a>
 
 The action provides following outputs:
 
 Output field from `secret1` till `secret10`. `secret1` is the value for the first field in `inputs.secret_fields` and so on.
+
+If custom names are given, then the output field names are the given names.
 
 ## 🛡️ Security Recommendations <a name="security-recommendations"></a>
 

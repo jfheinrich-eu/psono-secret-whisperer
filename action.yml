@@ -27,6 +27,9 @@ inputs:
     default: "username password"
   mask_secrets:
     description: "Comma-separated list of secret keys to be masked"
+  custom_field_names:
+    description: "Comma-separated list of custom names for the output fields"
+    default: ""
 
 outputs:
   secret1:

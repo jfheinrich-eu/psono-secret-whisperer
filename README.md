@@ -56,10 +56,10 @@ jobs:
             ci_server_url: 'https://your-psono-server.com'
             secret_id: ${{ secrets.SECRET_ID }}
             secret_type: 'env'
-            secret_fields: 'API_KEY, DATABASE_URL,OTHER_SECRET'
+            secret_fields: 'API_KEY,DATABASE_URL,OTHER_SECRET'
             mask_secrets: 'API_KEY,OTHER_SECRET'
-            # The first field (secret1) will be accessable as "api_key
-            # the two other will be still accessable as "secret2" and "secret3"
+            # The first field (secret1) will be accessible as "api_key
+            # the other two will be still accessable as "secret2" and "secret3"
             custom_field_names: 'api_key'
 
       # Access secrets
@@ -87,7 +87,7 @@ The action provides following outputs:
 
 Output field from `secret1` till `secret10`. `secret1` is the value for the first field in `inputs.secret_fields` and so on.
 
-Or are custom names given, then the output field names are the given names.
+If custom names are given, then the output field names are the given names.
 
 ## 🛡️ Security Recommendations <a name="security-recommendations"></a>
 

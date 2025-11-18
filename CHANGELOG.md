@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.0] - 2025-11-18
+### :bug: Bug Fixes
+- [`b18aa61`](https://github.com/jfheinrich-eu/psono-secret-whisperer/commit/b18aa61ea5ebfaf7cfb9eba40928203c5c906742) - correct typos and formatting in README.md *(commit by [@jfheinrich](https://github.com/jfheinrich))*
+- [`b79b7df`](https://github.com/jfheinrich-eu/psono-secret-whisperer/commit/b79b7df1396213f5a749fa93376f2aa9e94accb9) - correct spelling error in README.md *(commit by [@jfheinrich](https://github.com/jfheinrich))*
+
+### :recycle: Refactors
+- [`f683596`](https://github.com/jfheinrich-eu/psono-secret-whisperer/commit/f6835963f8d25050f48d48e38989a45555c0e4aa) - reorganize workflows and scripts for better maintainability and clarity *(commit by [@jfheinrich](https://github.com/jfheinrich))*
+- [`d0c6b98`](https://github.com/jfheinrich-eu/psono-secret-whisperer/commit/d0c6b98a808a5ae1dc30924430f6090f348217ae) - improve error handling and code readability in scripts *(commit by [@jfheinrich](https://github.com/jfheinrich))*
+
+### :wrench: Chores
+- [`e511d30`](https://github.com/jfheinrich-eu/psono-secret-whisperer/commit/e511d30d8a3be1658745d90318f049c7bcbdc315) - **deps**: bump actions/labeler from 5 to 6 *(commit by [@dependabot[bot]](https://github.com/apps/dependabot))*
+
+
 ## [v1.1.0] - 2025-08-20
 ### :sparkles: New Features
 - [`dbd6bad`](https://github.com/jfheinrich-eu/psono-secret-whisperer/commit/dbd6bad47fb0a1cc3773b21d7d3887a50a4e4395) - add pull request labeler workflow and configuration *(commit by [@jfheinrich](https://github.com/jfheinrich))*
@@ -61,3 +74,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`124c696`](https://github.com/jfheinrich-eu/psono-secret-whisperer/commit/124c69622147b24b4bbe29dd2ed4872fb438c72c) - **deps**: update actions/checkout to v5 *(commit by [@jfheinrich](https://github.com/jfheinrich))*
 
 [v1.1.0]: https://github.com/jfheinrich-eu/psono-secret-whisperer/compare/v1.0.0...v1.1.0
+[v1.2.0]: https://github.com/jfheinrich-eu/psono-secret-whisperer/compare/v1.1.0...v1.2.0

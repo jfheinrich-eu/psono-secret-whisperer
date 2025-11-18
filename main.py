@@ -7,16 +7,15 @@ import subprocess
 
 
 def set_github_action_output(output_name: str, output_value: str) -> None:
-    f = open(os.path.abspath(os.environ["GITHUB_OUTPUT"]), "a")
-    f.write(f"{output_name}={output_value}\n")
-    f.close()
+    with open(os.path.abspath(os.environ["GITHUB_OUTPUT"]), "a") as f:
+        f.write(f"{output_name}={output_value}\n")
 
 
 def main():
     secret_type: str = os.environ["INPUT_SECRET_TYPE"]
     mask_secrets: list[str] = os.environ["INPUT_MASK_SECRETS"].split(",")
-    custom_field_names: list[str] = os.environ["INPUT_CUSTOM_FIELD_NAMES"].split(
-        ",")
+    custom_field_names: list[str] = \
+        os.environ["INPUT_CUSTOM_FIELD_NAMES"].split(",")
     cmd: list[str] = []
     psono_env: dict[str, str] = {}
     psono_env["PSONO_CI_API_KEY_ID"] = os.environ["INPUT_CI_API_KEY_ID"]

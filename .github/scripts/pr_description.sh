@@ -8,6 +8,11 @@ sha="${2}"
 # Get all commits in the PR
 commits=$(git log --pretty=format:"%H|%s" origin/${ref}..${sha})
 
+if [[ -z "$commits" ]]; then
+    echo "No commits found between origin/${ref} and ${sha}."
+    exit 0
+fi
+
 # Initialize categories
 features=""
 fixes=""

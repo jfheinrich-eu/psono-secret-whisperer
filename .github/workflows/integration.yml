@@ -20,7 +20,7 @@ jobs:
     if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Self test
         if: ${{ github.actor != 'dependabot[bot]' }}
         id: selftest

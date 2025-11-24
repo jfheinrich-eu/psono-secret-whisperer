@@ -103,7 +103,7 @@ jobs:
               ;;
           esac
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: ${{ steps.find-pr.outputs.status == 'success' }}
         with:
           fetch-depth: 0

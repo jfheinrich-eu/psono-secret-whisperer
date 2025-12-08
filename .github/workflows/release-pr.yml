@@ -67,7 +67,7 @@ jobs:
           fi
           echo "label-check=success" >> "$GITHUB_OUTPUT"
 
-      - uses: jefflinse/pr-semver-bump@v1.7.3
+      - uses: jefflinse/pr-semver-bump@v1.7.4
         if: ${{ steps.label-check.outputs.label-check == 'success' }}
         name: Validate Release Pull Request Metadata
         with:
